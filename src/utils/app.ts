@@ -1,0 +1,15 @@
+import { Scene } from "./scene";
+
+export class App{
+    scene: Scene;
+    sceneStore: Map<string, ()=>Scene>;
+    constructor(){
+        this.scene = new Scene(this);
+        this.sceneStore = new Map();
+    }
+    setScene(name: string){
+        const nextScene = this.sceneStore.get(name);
+        if(nextScene === undefined) throw `Unknown scene name '${name}'`;
+        this.scene = nextScene();
+    }
+}
