@@ -1,3 +1,3 @@
-# Cleo TS Starter
+# Lords of the Edge
 
-Sample game template for cleo engine.
+A game using the cleo engine.
