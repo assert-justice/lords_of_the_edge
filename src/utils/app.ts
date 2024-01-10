@@ -12,4 +12,10 @@ export class App{
         if(nextScene === undefined) throw `Unknown scene name '${name}'`;
         this.scene = nextScene();
     }
+    update(dt: number){
+        this.scene.update(dt);
+    }
+    draw(){
+        this.scene.draw();
+    }
 }
