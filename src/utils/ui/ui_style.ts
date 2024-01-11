@@ -14,7 +14,7 @@ export interface UIStyle{
     marginBottom: number,
     // textAlign: 'left' | 'center' | 'right',
     flowDirection: 'horizontal' | 'vertical',
-    anchorMode: 'tl' | 'l' | 'bl' | 'b' | 'br' | 'r' | 'ur' | 'u' | 'c' ,
+    anchorMode: 'tl' | 'l' | 'bl' | 'b' | 'br' | 'r' | 'tr' | 't' | 'c' ,
     background?: UIImage,
     isMask: boolean,
 }

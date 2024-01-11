@@ -23,10 +23,10 @@ class Main extends App{
         Globals.railManager = new RailManager();
     }
     draw(): void {
-        this.renderTexture.setTarget();
+        // this.renderTexture.setTarget();
         Graphics.clear();
         super.draw();
-        this.renderTexture.resetTarget();
+        // this.renderTexture.resetTarget();
         this.renderTexture.draw(0,0);
     }
 }
