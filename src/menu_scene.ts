@@ -15,8 +15,8 @@ export class MenuScene extends Scene{
             width: 1000,
             height: 1000,
             // flowDirection: 'horizontal',
-            anchorMode: 'b',
-            background: new UIImageColor(255, 255, 255, 255),
+            anchorMode: 'c',
+            backgrounds: [new UIImageColor(255, 255, 255, 255)],
         };
         const gridImg = Graphics.Texture.fromFile('./sprites/gridBackground.png');
         for(let i = 0; i < 3; i++){
@@ -24,8 +24,8 @@ export class MenuScene extends Scene{
             child.style = {
                 ...child.style,
                 width: 50 * (i+1),
-                height: 100,
-                background: new UINineSlice(gridImg, 7, 7, 18, 18),
+                height: 50 * (i+1),
+                backgrounds: [new UINineSlice(gridImg, 7, 7, 18, 18)],
             };
             this.panel.addChild(child);
         }

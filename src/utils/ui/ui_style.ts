@@ -15,7 +15,7 @@ export interface UIStyle{
     // textAlign: 'left' | 'center' | 'right',
     flowDirection: 'horizontal' | 'vertical',
     anchorMode: 'tl' | 'l' | 'bl' | 'b' | 'br' | 'r' | 'tr' | 't' | 'c' ,
-    background?: UIImage,
+    backgrounds: UIImage[],
     isMask: boolean,
 }
 
@@ -35,6 +35,7 @@ export function getDefaultStyle(): UIStyle{
         flowDirection: 'vertical',
         anchorMode: 'tl',
         isMask: false,
+        backgrounds: [],
     }
 }
 

@@ -120,8 +120,8 @@ export class UINode{
         return [anchorX, anchorY];
     }
     draw(x: number, y: number){
-        if(this.style.background){
-            this.style.background.draw(
+        for (const background of this.style.backgrounds) {
+            background.draw(
                 x + this.style.padLeft,
                 y + this.style.padTop,
                 this.style.width, 
