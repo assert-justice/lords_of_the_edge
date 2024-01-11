@@ -75,9 +75,9 @@ export class UINode{
     removeChild(child: UINode){
         this.children = this.children.filter(c => c !== child);
     }
-    getTotalWidth(){return this.style.width + this.style.padLeft + this.style.padRight;}
-    getTotalHeight(){return this.style.height + this.style.padTop + this.style.padBottom;}
-    getChildrenBounds(): [number, number]{
+    private getTotalWidth(){return this.style.width + this.style.padLeft + this.style.padRight;}
+    private getTotalHeight(){return this.style.height + this.style.padTop + this.style.padBottom;}
+    private getChildrenBounds(): [number, number]{
         let boundsWidth = 0; let boundsHeight = 0;
         if(this.style.flowDirection === 'vertical'){
             for (const child of this.children) {
@@ -97,7 +97,7 @@ export class UINode{
         }
         return [boundsWidth, boundsHeight];
     }
-    getAnchorCoords(x: number, y: number, xAlign: string, yAlign: string, boundsWidth: number, boundsHeight: number): [number, number]{
+    private getAnchorCoords(x: number, y: number, xAlign: string, yAlign: string, boundsWidth: number, boundsHeight: number): [number, number]{
         let anchorX = x; let anchorY = y;
         if(xAlign === 'l'){
             anchorX += this.style.padLeft + this.style.marginLeft;
@@ -119,7 +119,7 @@ export class UINode{
         }
         return [anchorX, anchorY];
     }
-    draw(x: number, y: number){
+    private drawBackground(x: number, y: number){
         for (const background of this.style.backgrounds) {
             background.draw(
                 x + this.style.padLeft,
@@ -128,6 +128,8 @@ export class UINode{
                 this.style.height
             );
         }
+    }
+    private drawChildren(x: number, y: number){
         if(this.children.length === 0) return;
 
         let xPlaceFn: PlaceFn;// = (lastVal)=>lastVal;
@@ -140,8 +142,6 @@ export class UINode{
         else if(this.style.anchorMode.includes('b')) yAlign = 'b';
         const [boundsWidth, boundsHeight] = this.getChildrenBounds();
         const [xAnchor, yAnchor] = this.getAnchorCoords(x, y, xAlign, yAlign, boundsWidth, boundsHeight);
-        // System.println(boundsWidth, boundsHeight);
-        // System.println(xAnchor, yAnchor);
         if(this.style.flowDirection === 'vertical'){
             yPlaceFn = (lastVal, node) => [lastVal, lastVal + node.getTotalHeight()];
             if(xAlign === 'l') xPlaceFn = (lastVal)=>[lastVal, lastVal];
@@ -163,49 +163,11 @@ export class UINode{
             const [myX, myNextX] = xPlaceFn(cx, child);
             const [myY, myNextY] = yPlaceFn(cy, child);
             child.draw(myX, myY);
-            // System.println(myX, myY);
             cx = myNextX; cy = myNextY;
-            // const w = child.getTotalWidth();
-            // const h = child.getTotalHeight();
-            // if(w > boundsWidth) boundsWidth = w;
-            // boundsHeight += h;
         }
-        // }
-        // else{ // flowDirection is horizontal
-        //     for (const child of this.children) {
-        //         const w = child.getTotalWidth();
-        //         const h = child.getTotalHeight();
-        //         boundsWidth += w;
-        //         if(h > boundsHeight) boundsHeight = h;
-        //     }
-        // }
-        // right now let's just worry about tl anchor and vertical flow
-        // x += this.style.padLeft; 
-        // y += this.style.padTop;
-        // if(this.style.background){
-        //     this.style.background.draw(x,y,this.style.width, this.style.height);
-        // }
-        // x += this.style.marginLeft; 
-        // y += this.style.marginTop;
-        // for (const child of this.children) {
-        //     child.draw(x, y);
-        //     y += child.getTotalHeight();
-        // }
     }
-    // setDimensions(width: string, height: string){
-    //     let [widthValue, widthMode] = dimensionDecode(width);
-    //     let [heightValue, heightMode] = dimensionDecode(height);
-    //     if(widthMode === 'px'){}
-    //     else if(widthMode === '%'){}
-    // }
-    // setDimensionsPx(width: number, height: number){
-    //     if(this.parent === undefined){
-    //         // If the current node is root, our dimensions are in px already.
-    //         this.width = width; this.height = height;
-    //     }
-    //     else{
-    //         // If the current node is not the root, translate the width to ratio.
-    //         this.width = 
-    //     }
-    // }
+    draw(x: number, y: number){
+        this.drawBackground(x, y);
+        this.drawChildren(x, y);
+    }
 }
