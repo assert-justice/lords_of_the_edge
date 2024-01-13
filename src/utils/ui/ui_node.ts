@@ -119,7 +119,7 @@ export class UINode{
         }
         return [anchorX, anchorY];
     }
-    private drawBackground(x: number, y: number){
+    protected drawBackground(x: number, y: number){
         for (const background of this.style.backgrounds) {
             background.draw(
                 x + this.style.padLeft,
@@ -129,7 +129,7 @@ export class UINode{
             );
         }
     }
-    private drawChildren(x: number, y: number){
+    protected drawChildren(x: number, y: number){
         if(this.children.length === 0) return;
 
         let xPlaceFn: PlaceFn;// = (lastVal)=>lastVal;

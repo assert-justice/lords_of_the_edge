@@ -10,4 +10,7 @@ export class Sprite{
     draw(x: number, y: number){
         this.texture.draw(x, y, this.properties);
     }
+    setProps(props: Graphics.TextureParams){
+        Object.assign(this.properties, props);
+    }
 }
