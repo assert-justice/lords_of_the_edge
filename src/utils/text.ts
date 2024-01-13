@@ -21,11 +21,11 @@ export class Text{
     set wrapMode(mode: WrapMode){this._wrapMode = mode; this.calcCharacters();}
 
     private characters: Char[];
-    constructor(spriteSheet: SpriteSheet, text: string = ''){
+    constructor(spriteSheet: SpriteSheet, text: string){
         this.sheet = spriteSheet;
         this._text = text;
         this.characters = [];
-        this.calcCharacters();
+        this.text = text;
     }
     private calcCharacters(){
         this.characters.length = 0;
@@ -34,49 +34,19 @@ export class Text{
         for(let i = 0; i < this._text.length; i++){
             if(this._text[i] === '\n'){
                 ox = 0; oy+=this.sheet.tileHeight;
-                continue;
             }
             if(ox + this.sheet.tileWidth > maxW) maxW = ox + this.sheet.tileWidth;
             if(oy + this.sheet.tileHeight > maxH) maxH = oy + this.sheet.tileHeight;
             const code = this._text.charCodeAt(i) - 32;
-            if(code < 0 || code >= 105) continue; // ignore unprintable characters
-            this.characters.push([code, ox, oy]);
+            if(code >= 0 && code < 105) this.characters.push([code, ox, oy]);
             ox += this.sheet.tileWidth;
         }
         this._width = maxW; this._height = maxH;
     }
-    // private calcDimensions(){
-    //     let ox = 0; let oy = 0;
-    //     let maxW = 0; let maxH = 0;
-    //     for(let i = 0; i < this._text.length; i++){
-    //         if(this._text[i] === '\n'){
-    //             ox = 0; oy+=this.sheet.tileHeight;
-    //             continue;
-    //         }
-    //         if(ox + this.sheet.tileWidth > maxW) maxW = ox + this.sheet.tileWidth;
-    //         if(oy + this.sheet.tileHeight > maxH) maxH = oy + this.sheet.tileHeight;
-    //         const code = this._text.charCodeAt(i) - 32;
-    //         if(code < 0 || code >= 105) continue; // ignore unprintable characters
-    //         ox += this.sheet.tileWidth;
-    //     }
-    //     this._width = maxW; this._height = maxH;
-    // }
     draw(x: number, y: number){
         for (const [code, ox, oy] of this.characters) {
             this.sheet.setTile(code);
             this.sheet.draw(x + ox, y + oy);
         }
-        // let ox = 0; let oy = 0;
-        // for(let i = 0; i < this._text.length; i++){
-        //     if(this._text[i] === '\n'){
-        //         ox = 0; oy+=this.sheet.tileHeight;
-        //         continue;
-        //     }
-        //     const code = this._text.charCodeAt(i) - 32;
-        //     if(code < 0 || code >= 105) continue; // ignore unprintable characters
-        //     this.sheet.setTile(code);
-        //     this.sheet.draw(x + ox, y + oy);
-        //     ox += this.sheet.tileWidth;
-        // }
     }
 }

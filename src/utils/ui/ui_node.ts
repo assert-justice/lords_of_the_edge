@@ -1,6 +1,4 @@
 import { System } from "cleo";
-import { Vec2 } from "../la";
-import { UIImage } from "./image/ui_image";
 import { UIStyle, UIStyleManager, getDefaultStyle } from "./ui_style";
 
 interface Dimension{
@@ -28,14 +26,20 @@ function dimensionDecode(dimension: string): [number, 'px' | '%']{
 }
 
 type PlaceFn = (lastVal: number, node: UINode)=>[number, number];
+type ChildPos = [UINode, number, number];
 
 export class UINode{
-    parent?: UINode = undefined;
-    children: UINode[] = [];
+    private parent?: UINode = undefined;
+    private children: UINode[] = [];
+    private childPositions: ChildPos[] = [];
+    private dirty = true;
+    _visible = true;
+    get visible(){return this._visible;}
+    set visible(val: boolean) {this._visible = val; this.setDirty();}
     // position: Vec2;
     // styleType: string;
     // styleId?: string;
-    styleClass?: string;
+    // styleClass?: string;
     // styleManager: UIStyleManager;
     style: UIStyle;
     onMount: (node: UINode)=>void = ()=>{};
@@ -44,18 +48,13 @@ export class UINode{
     onUnfocus: (node: UINode)=>void = ()=>{};
     onSelect: (node: UINode)=>void = ()=>{};
     onBack: (node: UINode)=>void = ()=>{};
-    constructor(){
-    // constructor(styleManager?: UIStyleManager){
-        // if(styleManager === undefined) {
-        //     this.styleManager = new UIStyleManager();
-        // }
-        // else{
-        //     this.styleManager = styleManager;
-        // }
-        // this.position = new Vec2();
-        // this.styleType = 'node';
-        // this.style = this.styleManager.match(this);
+    constructor(parent: UINode | undefined){
         this.style = getDefaultStyle();
+        if(parent) this.setParent(parent);
+    }
+    setDirty(){
+        this.dirty = true;
+        if(this.parent) this.parent.setDirty();
     }
     getParent(){
         return this.parent;
@@ -75,12 +74,14 @@ export class UINode{
     removeChild(child: UINode){
         this.children = this.children.filter(c => c !== child);
     }
-    private getTotalWidth(){return this.style.width + this.style.padLeft + this.style.padRight;}
+    private getTotalWidth(){
+        return this.style.width + this.style.padLeft + this.style.padRight;}
     private getTotalHeight(){return this.style.height + this.style.padTop + this.style.padBottom;}
     private getChildrenBounds(): [number, number]{
         let boundsWidth = 0; let boundsHeight = 0;
         if(this.style.flowDirection === 'vertical'){
             for (const child of this.children) {
+                if(child.visible === false) continue;
                 const w = child.getTotalWidth();
                 const h = child.getTotalHeight();
                 if(w > boundsWidth) boundsWidth = w;
@@ -89,6 +90,7 @@ export class UINode{
         }
         else{ // flowDirection is horizontal
             for (const child of this.children) {
+                if(child.visible === false) continue;
                 const w = child.getTotalWidth();
                 const h = child.getTotalHeight();
                 boundsWidth += w;
@@ -97,8 +99,8 @@ export class UINode{
         }
         return [boundsWidth, boundsHeight];
     }
-    private getAnchorCoords(x: number, y: number, xAlign: string, yAlign: string, boundsWidth: number, boundsHeight: number): [number, number]{
-        let anchorX = x; let anchorY = y;
+    private getAnchorCoords(xAlign: string, yAlign: string, boundsWidth: number, boundsHeight: number): [number, number]{
+        let anchorX = 0; let anchorY = 0;
         if(xAlign === 'l'){
             anchorX += this.style.padLeft + this.style.marginLeft;
         }
@@ -119,19 +121,15 @@ export class UINode{
         }
         return [anchorX, anchorY];
     }
-    protected drawBackground(x: number, y: number){
-        for (const background of this.style.backgrounds) {
-            background.draw(
-                x + this.style.padLeft,
-                y + this.style.padTop,
-                this.style.width, 
-                this.style.height
-            );
-        }
+    fitChildren(){
+        const [boundsWidth, boundsHeight] = this.getChildrenBounds();
+        this.style.width = boundsWidth + this.style.marginLeft + this.style.marginRight;
+        this.style.height = boundsHeight + this.style.marginTop + this.style.marginBottom;
+        this.setDirty();
     }
-    protected drawChildren(x: number, y: number){
+    placeChildren(){
+        this.childPositions.length = 0;
         if(this.children.length === 0) return;
-
         let xPlaceFn: PlaceFn;// = (lastVal)=>lastVal;
         let yPlaceFn: PlaceFn;// = (lastVal)=>lastVal;
         let xAlign: 'l' | 'r' | '' = '';
@@ -141,7 +139,7 @@ export class UINode{
         if(this.style.anchorMode.includes('t')) yAlign = 't';
         else if(this.style.anchorMode.includes('b')) yAlign = 'b';
         const [boundsWidth, boundsHeight] = this.getChildrenBounds();
-        const [xAnchor, yAnchor] = this.getAnchorCoords(x, y, xAlign, yAlign, boundsWidth, boundsHeight);
+        const [xAnchor, yAnchor] = this.getAnchorCoords(xAlign, yAlign, boundsWidth, boundsHeight);
         if(this.style.flowDirection === 'vertical'){
             yPlaceFn = (lastVal, node) => [lastVal, lastVal + node.getTotalHeight()];
             if(xAlign === 'l') xPlaceFn = (lastVal)=>[lastVal, lastVal];
@@ -160,14 +158,24 @@ export class UINode{
         }
         let cx = xAnchor; let cy = yAnchor;
         for (const child of this.children) {
+            if(child.visible === false) continue;
             const [myX, myNextX] = xPlaceFn(cx, child);
             const [myY, myNextY] = yPlaceFn(cy, child);
-            child.draw(myX, myY);
+            this.childPositions.push([child, myX, myY]);
             cx = myNextX; cy = myNextY;
         }
     }
+    protected drawChildren(x: number, y: number){
+        if(this.dirty){
+            this.dirty = false;
+            this.placeChildren();
+        }
+        for (const [child, dx, dy] of this.childPositions) {
+            child.draw(x + dx, y + dy);
+        }
+    }
     draw(x: number, y: number){
-        this.drawBackground(x, y);
+        this.placeChildren();
         this.drawChildren(x, y);
     }
 }

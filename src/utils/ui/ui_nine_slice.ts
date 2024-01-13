@@ -1,19 +1,21 @@
 import { Graphics } from "cleo";
 import { UIImage } from "./ui_image";
+import { UINode } from "./ui_node";
 
 export class UINineSlice extends UIImage{
     innerX: number; 
     innerY: number; 
     innerWidth: number; 
     innerHeight: number;
-    constructor(texture: Graphics.Texture, innerX: number, innerY: number, innerWidth: number, innerHeight: number){
-        super(texture);
+    constructor(parent: UINode | undefined, texture: Graphics.Texture, innerX: number, innerY: number, innerWidth: number, innerHeight: number){
+        super(parent, texture);
         this.innerX = innerX;
         this.innerY = innerY;
         this.innerWidth = innerWidth;
         this.innerHeight = innerHeight;
     }
-    draw(x: number, y: number, width: number, height: number): void {
+    draw(x: number, y: number): void {
+        const {width, height} = this.style;
         const wa = this.innerX; const wb = this.innerWidth; const wc = this.texture.width - wa - wb;
         const ha = this.innerY; const hb = this.innerHeight; const hc = this.texture.height - ha - hb;
         // corners
@@ -62,5 +64,6 @@ export class UINineSlice extends UIImage{
             sx: wa, sy: ha,
             sw: wb, sh: hb,
         }); // c
+        this.drawChildren(x, y);
     }
 }

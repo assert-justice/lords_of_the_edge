@@ -1,4 +1,4 @@
-import { UIImage } from "./image/ui_image"
+import { UIImage } from "./ui_image"
 import { UINode } from "./ui_node"
 
 export interface UIStyle{
@@ -15,7 +15,7 @@ export interface UIStyle{
     // textAlign: 'left' | 'center' | 'right',
     flowDirection: 'horizontal' | 'vertical',
     anchorMode: 'tl' | 'l' | 'bl' | 'b' | 'br' | 'r' | 'tr' | 't' | 'c' ,
-    backgrounds: UIImage[],
+    // backgrounds: UIImage[],
     isMask: boolean,
 }
 
@@ -35,7 +35,7 @@ export function getDefaultStyle(): UIStyle{
         flowDirection: 'vertical',
         anchorMode: 'tl',
         isMask: false,
-        backgrounds: [],
+        // backgrounds: [],
     }
 }
 
