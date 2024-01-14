@@ -8,17 +8,18 @@ export class UILabel extends UINode{
     set text(str: string){this.textComponent.text = str}
     textComponent: Text;
     // charactersVisible: number = -1;
-    constructor(parent: UINode | undefined, text: string){
+    constructor(parent: UINode | undefined, textRenderer: Text){
         super(parent);
-        // TODO: text renderer should come from style
-        const tex = Graphics.Texture.fromFile('./sprites/font8x8.png');
-        const sheet = new SpriteSheet(tex, 8, 8);
-        this.textComponent = new Text(sheet, text);
+        this.textComponent = textRenderer;
+    }
+    static fromTexture(parent: UINode | undefined, text: string, texture: Graphics.Texture, tileWidth: number, tileHeight: number){
+        const sheet = new SpriteSheet(texture, tileWidth, tileHeight);
+        const textRenderer = new Text(sheet, text);
+        return new UILabel(parent, textRenderer);
     }
     fitText(){
         this.style.width = this.textComponent.width + this.style.marginLeft + this.style.marginRight; 
         this.style.height = this.textComponent.height + this.style.marginTop + this.style.marginBottom;
-        // System.println('fitText', this.style.width, this.style.height);
         this.setDirty();
     }
     draw(x: number, y: number): void {

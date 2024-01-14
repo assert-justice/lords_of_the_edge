@@ -7,15 +7,16 @@ import { RailManager } from "./rail_manager";
 // internal resolution: 640, 360
 Window.setStats('Lords of the Edge', 1920, 1080);
 
-class Main extends App{
+export class Main extends App{
     renderTexture: Graphics.Texture;
+    menuScene: MenuScene;
     constructor(){
         super();
         this.sceneStore.set('game', ()=>new Game(this));
-        this.sceneStore.set('menu', ()=>new MenuScene(this));
-        this.setScene('menu');
-        this.renderTexture = Graphics.Texture.new(640, 360);
-        Globals.init();
+        this.menuScene = new MenuScene(this);
+        // this.sceneStore.set('menu', ()=>new MenuScene(this));
+        // this.setScene('menu');
+        this.renderTexture = Graphics.Texture.new(Globals.renderWidth, Globals.renderHeight);
         Globals.textureManager
         .add('bike', './sprites/bike.png')
         .add('pallet', './sprites/pallet.png')
@@ -23,18 +24,28 @@ class Main extends App{
         Globals.railManager = new RailManager();
     }
     draw(): void {
-        // this.renderTexture.setTarget();
+        this.renderTexture.setTarget();
         Graphics.clear();
         super.draw();
-        // this.renderTexture.resetTarget();
-        this.renderTexture.draw(0,0);
+        if(Globals.paused) this.menuScene.draw();
+        this.renderTexture.resetTarget();
+        this.renderTexture.draw(0,0, {width: Window.width, height: Window.height});
+    }
+    update(dt: number): void {
+        Globals.inputManager.poll();
+        if(Globals.paused){
+            this.menuScene.update(dt);
+        }
+        else{
+            super.update(dt);
+        }
     }
 }
 
 Engine.init = ()=>{
+    Globals.init();
     const main = new Main();
     Engine.update = (dt: number)=>{
-        // if(Input.keyIsDown(256)) Engine.quit();
         main.update(dt);
     };
     Engine.draw = ()=>{

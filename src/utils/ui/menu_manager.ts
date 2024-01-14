@@ -1,5 +1,6 @@
 import { System } from "cleo";
 import { UINode } from "./ui_node";
+import { InputManager } from "../input_manager";
 
 function findFocusable(node: UINode, list: UINode[]){
     if(node.canFocus){list.push(node);}
@@ -25,11 +26,13 @@ export class Menu{
         let focused = findFocusable(root, this.nav);
         if(focused) this.focused = focused;
         else throw 'no focusable nodes found';
-        // focused.onFocus(focused);
     }
     onMount(){
         this.root.onMount();
         this.setIdx(0);
+        // I really, *really* don't know why this is needed.
+        this.next();
+        this.last();
     }
     onUnmount(){this.root.onUnmount();}
     private setIdx(idx: number){
@@ -37,6 +40,7 @@ export class Menu{
         this.focused?.onUnfocus(this.focused);
         this.focused = this.nav[this.focusIdx];
         this.focused.onFocus(this.focused);
+        this.root.setDirty();
     }
     next(){
         let newFocusIdx = this.focusIdx + 1;
@@ -54,7 +58,6 @@ export class Menu{
         }
         this.setIdx(newFocusIdx);
     }
-    // back(){}
     draw(x: number, y: number){
         this.root.draw(x, y);
     }
@@ -68,10 +71,12 @@ export class Menu{
 }
 
 export class MenuManager{
+    inputManager: InputManager;
     menus: Map<string, Menu>;
     history: string[] = [];
     activeMenu?: Menu;
-    constructor(){
+    constructor(inputManager: InputManager){
+        this.inputManager = inputManager;
         this.menus = new Map();
     }
     getMenu(name: string){
@@ -84,6 +89,7 @@ export class MenuManager{
         if(!this.activeMenu) this.navigate(name);
     }
     private goTo(name: string){
+        System.println(name);
         const nextMenu = this.menus.get(name);
         if(!nextMenu) throw `Menu name '${name}' not valid!`;
         if(nextMenu === this.activeMenu) return;
@@ -100,16 +106,13 @@ export class MenuManager{
         this.history.pop();
         this.goTo(this.history[this.history.length-1]);
     }
-    // next(){
-    //     this.activeMenu?.next();
-    // }
-    // last(){
-    //     this.activeMenu?.last();
-    // }
     draw(x: number, y: number){
         this.activeMenu?.draw(x, y);
     }
-    handleInput(message: string){
-        this.activeMenu?.handleInput(message);
+    update(dt: number){
+        if (this.inputManager.getButton('uiDown').isPressed()) this.activeMenu?.handleInput('down');
+        if (this.inputManager.getButton('uiUp').isPressed()) this.activeMenu?.handleInput('up');
+        if (this.inputManager.getButton('uiSelect').isPressed()) this.activeMenu?.handleInput('select');
+        if (this.inputManager.getButton('uiBack').isPressed()) this.activeMenu?.handleInput('back');
     }
 }

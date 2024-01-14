@@ -8,6 +8,10 @@ export class Globals{
     static messageBus: MessageBus;
     static railManager: RailManager;
     static inputManager: InputManager;
+    static paused: boolean = true;
+    // internal resolution: 640, 360
+    static renderWidth = 640;
+    static renderHeight = 360;
     static init(){
         this.textureManager = new TextureManager();
         this.messageBus = new MessageBus();

@@ -19,11 +19,15 @@ export class UIButton extends UINode{
         }
     }
     onMount(): void{
+        this.removeChild(this.unfocused);
+        this.removeChild(this.focused);
         this.addChild(this.unfocused);
         this.fitChildren();
+        this.setDirty();
     }
     onUnmount(): void {
         this.removeChild(this.unfocused);
         this.removeChild(this.focused);
+        this.setDirty();
     }
 }

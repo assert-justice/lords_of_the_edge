@@ -59,7 +59,7 @@ export class Player extends Entity{
     }
     update(dt: number): void {
         super.update(dt);
-        this.input.poll();
+        if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
         if(this.position.y > Window.height) this.position.y = 0;
         const move = this.moveAxis.getValue();
         this.clamped = !(move.y > 0.7); 

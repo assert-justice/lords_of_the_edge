@@ -79,6 +79,7 @@ export class UINode{
         parent.addChild(this);
     }
     addChild(child: UINode){
+        child.parent = this;
         this.children.push(child);
     }
     removeChild(child: UINode){
@@ -141,6 +142,9 @@ export class UINode{
     placeChildren(){
         this.childPositions.length = 0;
         if(this.children.length === 0) return;
+        for (const child of this.children) {
+            child.placeChildren();
+        }
         let xPlaceFn: PlaceFn;// = (lastVal)=>lastVal;
         let yPlaceFn: PlaceFn;// = (lastVal)=>lastVal;
         let xAlign: 'l' | 'r' | '' = '';
@@ -186,7 +190,6 @@ export class UINode{
         }
     }
     draw(x: number, y: number){
-        this.placeChildren();
         this.drawChildren(x, y);
     }
 }
