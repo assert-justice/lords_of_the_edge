@@ -89,7 +89,6 @@ export class MenuManager{
         if(!this.activeMenu) this.navigate(name);
     }
     private goTo(name: string){
-        System.println(name);
         const nextMenu = this.menus.get(name);
         if(!nextMenu) throw `Menu name '${name}' not valid!`;
         if(nextMenu === this.activeMenu) return;

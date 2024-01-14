@@ -20,6 +20,7 @@ export class Main extends App{
         Globals.textureManager
         .add('bike', './sprites/bike.png')
         .add('pallet', './sprites/pallet.png')
+        .add('turret', './sprites/turret.png')
         .add('police_car', './sprites/police_car_no_siren.png')
         Globals.railManager = new RailManager();
     }

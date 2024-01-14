@@ -13,21 +13,25 @@ export class Player extends Entity{
     velocity: Vec2;
     gravity: number = 50;
     gravityScale: number = 0.3;
-    jumpPower: number = 8;
+    jumpPower: number = 4;
     clamped: boolean = true;
-    clampRange: number = 30;
+    clampRange: number = 16;
     speed: number = 500;
     railManager: RailManager;
     moveAxis: VAxis2D;
     jumpButton: VButton;
     airControl: number = 50;
     state: 'clamped' | 'falling' = 'clamped';
+    turretSpr: Sprite;
     constructor(){
         super();
         const tex = Globals.textureManager.get('bike');
         this.spr = new Sprite(tex,{
-            ox: tex.width/2,
-            oy: tex.height/2,
+            // ox: tex.width/2,
+            // oy: tex.height/2,
+        });
+        this.turretSpr = new Sprite(Globals.textureManager.get('turret'),{
+            ox: 8, oy: 8, angle: 0,
         });
         this.input = Globals.inputManager;
         this.moveAxis = this.input.addAxis2D('move');
@@ -49,7 +53,7 @@ export class Player extends Entity{
         if(this.velocity.y < 0) return true;
         for (const rail of this.railManager.rails) {
             if(rail === null) continue;
-            const diff = 40;
+            const diff = 32;
             if(Math.abs(rail - this.position.y - diff) < this.clampRange) {
                 this.position.y = rail - diff;
                 return false;
@@ -78,10 +82,11 @@ export class Player extends Entity{
             }
             this.position.add(this.velocity);
         }
-        this.position.x = clamp(0, this.position.x, Window.width);
+        this.position.x = clamp(0, this.position.x, Globals.renderWidth);
     }
     draw(){
         super.draw();
         this.spr.draw(this.position.x, this.position.y);
+        this.turretSpr.draw(this.position.x + 56, this.position.y + 24);
     }
 }

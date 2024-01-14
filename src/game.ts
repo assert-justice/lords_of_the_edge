@@ -7,11 +7,11 @@ import { App } from "./utils/app";
 
 export class Game extends Scene{
     player: Player;
-    policeCar: PoliceCar;
+    // policeCar: PoliceCar;
     constructor(app: App){
         super(app);
         this.player = new Player();
-        this.policeCar = new PoliceCar();
+        // this.policeCar = new PoliceCar();
         Graphics.setClearColor(0.4/256,5.5/256,50.2/256,1);
     }
     update(dt: number){
@@ -20,6 +20,6 @@ export class Game extends Scene{
     draw(){
         Globals.railManager.draw();
         this.player.draw();
-        this.policeCar.draw();
+        // this.policeCar.draw();
     }
 }
