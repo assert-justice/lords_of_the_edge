@@ -30,6 +30,7 @@ type ChildPos = [UINode, number, number];
 
 export class UINode{
     private parent?: UINode = undefined;
+    canFocus = false;
     private children: UINode[] = [];
     private childPositions: ChildPos[] = [];
     private dirty = true;
@@ -42,15 +43,27 @@ export class UINode{
     // styleClass?: string;
     // styleManager: UIStyleManager;
     style: UIStyle;
-    onMount: (node: UINode)=>void = ()=>{};
-    onUnmount: (node: UINode)=>void = ()=>{};
+    // onMount: (node: UINode)=>void = ()=>{};
+    // onUnmount: (node: UINode)=>void = ()=>{};
     onFocus: (node: UINode)=>void = ()=>{};
     onUnfocus: (node: UINode)=>void = ()=>{};
     onSelect: (node: UINode)=>void = ()=>{};
     onBack: (node: UINode)=>void = ()=>{};
     constructor(parent: UINode | undefined){
         this.style = getDefaultStyle();
-        if(parent) this.setParent(parent);
+        if(parent) {
+            this.setParent(parent);
+        }
+    }
+    onMount(){
+        for (const child of this.children) {
+            child.onMount();
+        }
+    }
+    onUnmount(){
+        for (const child of this.children) {
+            child.onUnmount();
+        }
     }
     setDirty(){
         this.dirty = true;
@@ -65,15 +78,13 @@ export class UINode{
         if(this.parent !== undefined) this.parent.removeChild(this);
         parent.addChild(this);
     }
-    getChildren(){
-        return this.children;
-    }
     addChild(child: UINode){
         this.children.push(child);
     }
     removeChild(child: UINode){
         this.children = this.children.filter(c => c !== child);
     }
+    getChildren(){return [...this.children];}
     private getTotalWidth(){
         return this.style.width + this.style.padLeft + this.style.padRight;}
     private getTotalHeight(){return this.style.height + this.style.padTop + this.style.padBottom;}

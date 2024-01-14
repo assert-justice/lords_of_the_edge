@@ -34,7 +34,7 @@ class Main extends App{
 Engine.init = ()=>{
     const main = new Main();
     Engine.update = (dt: number)=>{
-        if(Input.keyIsDown(256)) Engine.quit();
+        // if(Input.keyIsDown(256)) Engine.quit();
         main.update(dt);
     };
     Engine.draw = ()=>{

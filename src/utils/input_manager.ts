@@ -175,6 +175,13 @@ export class InputManager{
         this.buttons = new Map();
         this.axes = new Map();
         this.axes2D = new Map();
+        // default ui controls
+        this.addButton('uiUp').addJoyButton(0, JoyButton.d_up).addKey(Key.up);
+        this.addButton('uiDown').addJoyButton(0, JoyButton.d_down).addKey(Key.down);
+        this.addButton('uiLeft').addJoyButton(0, JoyButton.d_left).addKey(Key.left);
+        this.addButton('uiRight').addJoyButton(0, JoyButton.d_right).addKey(Key.right);
+        this.addButton('uiSelect').addJoyButton(0, JoyButton.a).addKey(Key.space).addKey(Key.enter);
+        this.addButton('uiBack').addJoyButton(0, JoyButton.b).addKey(Key.escape);
     }
     poll(){
         for (const button of this.buttons.values()) {

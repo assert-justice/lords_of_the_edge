@@ -29,7 +29,7 @@ export class Player extends Entity{
             ox: tex.width/2,
             oy: tex.height/2,
         });
-        this.input = new InputManager();
+        this.input = Globals.inputManager;
         this.moveAxis = this.input.addAxis2D('move');
         this.moveAxis.xAxis
             .addKeyPositive(Key.d)
