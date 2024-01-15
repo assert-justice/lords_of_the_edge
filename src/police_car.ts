@@ -14,7 +14,12 @@ export class PoliceCar extends Entity{
         });
     }
     draw(){
-        super.draw();
         this.spr.draw(this.position.x, this.position.y);
+    }
+    update(dt: number): void {
+        //
+    }
+    cleanup(): void {
+        //
     }
 }

@@ -1,5 +1,6 @@
 import { System } from "cleo";
 import { UIStyle, UIStyleManager, getDefaultStyle } from "./ui_style";
+import { Vec2 } from "../la";
 
 interface Dimension{
     value: number,
@@ -37,7 +38,7 @@ export class UINode{
     _visible = true;
     get visible(){return this._visible;}
     set visible(val: boolean) {this._visible = val; this.setDirty();}
-    // position: Vec2;
+    private position: Vec2;
     // styleType: string;
     // styleId?: string;
     // styleClass?: string;
@@ -54,6 +55,7 @@ export class UINode{
         if(parent) {
             this.setParent(parent);
         }
+        this.position = new Vec2();
     }
     onMount(){
         for (const child of this.children) {
@@ -86,6 +88,13 @@ export class UINode{
         this.children = this.children.filter(c => c !== child);
     }
     getChildren(){return [...this.children];}
+    isOverNode(x: number, y: number){
+        const minX = this.position.x - this.style.padLeft;
+        const minY = this.position.y - this.style.padTop;
+        const maxX = minX + this.getTotalWidth();
+        const maxY = minY + this.getTotalHeight();
+        return x > minX && x < maxX && y > minY && y < maxY; 
+    }
     private getTotalWidth(){
         return this.style.width + this.style.padLeft + this.style.padRight;}
     private getTotalHeight(){return this.style.height + this.style.padTop + this.style.padBottom;}
@@ -190,6 +199,7 @@ export class UINode{
         }
     }
     draw(x: number, y: number){
+        this.position.x = x; this.position.y = y;
         this.drawChildren(x, y);
     }
 }

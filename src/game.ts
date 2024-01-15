@@ -16,10 +16,12 @@ export class Game extends Scene{
     }
     update(dt: number){
         this.player.update(dt);
+        Globals.playerBullets.forEach(b=>b.update(dt));
     }
     draw(){
         Globals.railManager.draw();
         this.player.draw();
+        Globals.playerBullets.forEach(b=>b.draw());
         // this.policeCar.draw();
     }
 }

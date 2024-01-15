@@ -21,6 +21,7 @@ export class Main extends App{
         .add('bike', './sprites/bike.png')
         .add('pallet', './sprites/pallet.png')
         .add('turret', './sprites/turret.png')
+        .add('player_bullet', './sprites/bullet.png')
         .add('police_car', './sprites/police_car_no_siren.png')
         Globals.railManager = new RailManager();
     }

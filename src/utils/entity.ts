@@ -1,10 +1,11 @@
 import { Vec2 } from "./la";
 
-export class Entity{
+export abstract class Entity{
     position: Vec2;
     constructor(){
         this.position = new Vec2();
     }
-    update(dt: number){}
-    draw(){}
+    abstract update(dt: number): void;
+    abstract draw(): void;
+    abstract cleanup(): void;
 }

@@ -37,8 +37,10 @@ export class Menu{
     onUnmount(){this.root.onUnmount();}
     private setIdx(idx: number){
         this.focusIdx = idx;
+        const nextFocus = this.nav[this.focusIdx];
+        if(this.focused === nextFocus) return;
         this.focused?.onUnfocus(this.focused);
-        this.focused = this.nav[this.focusIdx];
+        this.focused = nextFocus;
         this.focused.onFocus(this.focused);
         this.root.setDirty();
     }
@@ -67,6 +69,14 @@ export class Menu{
         else if(message === 'select') this.focused?.onSelect(this.focused);
         else if(message === 'back') this.backFn(this);
         else throw `Unrecognized menu input '${message}'`;
+    }
+    handleCursor(cursorX: number, cursorY: number){
+        this.focusIdx;
+        for (let idx = 0; idx < this.nav.length; idx++) {
+            const node = this.nav[idx];
+            if(node.isOverNode(cursorX, cursorY)) this.focusIdx = idx;
+        }
+        this.setIdx(this.focusIdx);
     }
 }
 
@@ -113,5 +123,8 @@ export class MenuManager{
         if (this.inputManager.getButton('uiUp').isPressed()) this.activeMenu?.handleInput('up');
         if (this.inputManager.getButton('uiSelect').isPressed()) this.activeMenu?.handleInput('select');
         if (this.inputManager.getButton('uiBack').isPressed()) this.activeMenu?.handleInput('back');
+    }
+    handleCursor(cursorX: number, cursorY: number){
+        this.activeMenu?.handleCursor(cursorX, cursorY);
     }
 }

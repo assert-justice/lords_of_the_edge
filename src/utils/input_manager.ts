@@ -80,6 +80,10 @@ export class VButton{
         this.addInput(()=>Input.joyButtonIsDown(joyIdx, code));
         return this;
     }
+    addMouseButton(code: number){
+        this.addInput(()=>Input.mouseButtonIsDown(code));
+        return this;
+    }
 }
 
 export class VAxis{
@@ -171,17 +175,28 @@ export class InputManager{
     buttons: Map<string, VButton>;
     axes: Map<string,VAxis>;
     axes2D: Map<string,VAxis2D>;
+    cursorFn: ()=>[number, number];
+    lastCursor: Vec2;
+    cursorPosition: Vec2;
+    cursorChanged = false;
     constructor(){
         this.buttons = new Map();
         this.axes = new Map();
         this.axes2D = new Map();
         // default ui controls
-        this.addButton('uiUp').addJoyButton(0, JoyButton.d_up).addKey(Key.up);
-        this.addButton('uiDown').addJoyButton(0, JoyButton.d_down).addKey(Key.down);
-        this.addButton('uiLeft').addJoyButton(0, JoyButton.d_left).addKey(Key.left);
-        this.addButton('uiRight').addJoyButton(0, JoyButton.d_right).addKey(Key.right);
-        this.addButton('uiSelect').addJoyButton(0, JoyButton.a).addKey(Key.space).addKey(Key.enter);
+        this.addButton('uiUp').addJoyButton(0, JoyButton.d_up).addKey(Key.up).addKey(Key.w);
+        this.addButton('uiDown').addJoyButton(0, JoyButton.d_down).addKey(Key.down).addKey(Key.s);
+        this.addButton('uiLeft').addJoyButton(0, JoyButton.d_left).addKey(Key.left).addKey(Key.a);
+        this.addButton('uiRight').addJoyButton(0, JoyButton.d_right).addKey(Key.right).addKey(Key.d);
+        this.addButton('uiSelect')
+            .addJoyButton(0, JoyButton.a)
+            .addKey(Key.space)
+            .addKey(Key.enter)
+            .addMouseButton(0);
         this.addButton('uiBack').addJoyButton(0, JoyButton.b).addKey(Key.escape);
+        this.cursorFn = ()=>[Input.mouseX, Input.mouseY];
+        this.lastCursor = new Vec2();
+        this.cursorPosition = new Vec2();
     }
     poll(){
         for (const button of this.buttons.values()) {
@@ -193,6 +208,10 @@ export class InputManager{
         for (const axis2D of this.axes2D.values()) {
             axis2D._poll();
         }
+        const [cx, cy] = this.cursorFn();
+        this.cursorPosition = new Vec2(cx, cy);
+        this.cursorChanged = this.cursorPosition.x !== this.lastCursor.x || this.cursorPosition.y !== this.lastCursor.y;
+        this.lastCursor = this.cursorPosition;
     }
     addButton(name: string){
         const button = new VButton();

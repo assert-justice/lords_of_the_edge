@@ -5,7 +5,8 @@ import { Vec2 } from "./utils/la";
 import { RailManager } from "./rail_manager";
 import { Sprite } from "./utils/sprite";
 import { clamp } from "./utils/math";
-import { Window } from "cleo";
+import { System, Window } from "cleo";
+import { Bullet } from "./bullet";
 
 export class Player extends Entity{
     spr: Sprite;
@@ -19,10 +20,14 @@ export class Player extends Entity{
     speed: number = 500;
     railManager: RailManager;
     moveAxis: VAxis2D;
+    aimAxis: VAxis2D;
     jumpButton: VButton;
+    fireButton: VButton;
     airControl: number = 50;
     state: 'clamped' | 'falling' = 'clamped';
     turretSpr: Sprite;
+    aim: Vec2;
+    turretPos: Vec2;
     constructor(){
         super();
         const tex = Globals.textureManager.get('bike');
@@ -42,11 +47,19 @@ export class Player extends Entity{
         this.moveAxis.yAxis
             .addKeyPositive(Key.s)
             .addJoyAxis(0, JoyAxis.ly);
+        this.aimAxis = this.input.addAxis2D('aim');
+        this.aimAxis.xAxis.addJoyAxis(0, JoyAxis.rx);
+        this.aimAxis.yAxis.addJoyAxis(0, JoyAxis.ry);
         this.jumpButton = this.input.addButton('jump')
             .addKey(Key.space)
             .addJoyButton(0, JoyButton.a);
+        this.fireButton = this.input.addButton('fire')
+            .addMouseButton(0)
+            .addJoyButton(0, JoyButton.rb);
         this.velocity = new Vec2();
+        this.aim = new Vec2();
         this.railManager = Globals.railManager;
+        this.turretPos = new Vec2();
     }
     isFalling(): boolean{
         if(!this.clamped) return true;
@@ -62,9 +75,10 @@ export class Player extends Entity{
         return true;
     }
     update(dt: number): void {
-        super.update(dt);
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
-        if(this.position.y > Window.height) this.position.y = 0;
+        // if(this.position.y > Window.height) this.position.y = 0;
+        this.turretPos.x = this.position.x + 56;
+        this.turretPos.y = this.position.y + 24;
         const move = this.moveAxis.getValue();
         this.clamped = !(move.y > 0.7); 
         if(this.isFalling()){
@@ -83,10 +97,30 @@ export class Player extends Entity{
             this.position.add(this.velocity);
         }
         this.position.x = clamp(0, this.position.x, Globals.renderWidth);
+        // handle turret
+        const joyAim = this.aimAxis.getValue();
+        if(joyAim.length() > 0){
+            this.aim = joyAim;
+            const angle = Math.atan2(this.aim.y, this.aim.x);
+            this.turretSpr.properties.angle = angle;
+        }
+        else if(this.input.cursorChanged){
+            this.aim = this.input.cursorPosition.copy().sub(this.turretPos);
+            const angle = Math.atan2(this.aim.y, this.aim.x);
+            this.turretSpr.properties.angle = angle;
+        }
+        if(this.fireButton.isPressed() && this.aim.length() > 0){
+            this.aim.normalize();
+            const bullet = new Bullet(Globals.playerBullets);
+            bullet.velocity = this.aim.copy().mul(100);
+            bullet.position = this.turretPos.copy();
+        }
     }
     draw(){
-        super.draw();
         this.spr.draw(this.position.x, this.position.y);
-        this.turretSpr.draw(this.position.x + 56, this.position.y + 24);
+        this.turretSpr.draw(this.turretPos.x, this.turretPos.y);
+    }
+    cleanup(): void {
+        //
     }
 }

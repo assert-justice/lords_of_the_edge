@@ -1,4 +1,4 @@
-import { Engine, Graphics, System } from "cleo";
+import { Engine, Graphics, Input, System, Window } from "cleo";
 import { App } from "./utils/app";
 import { Scene } from "./utils/scene";
 import { UIImageColor } from "./utils/ui/ui_image_color";
@@ -10,6 +10,7 @@ import { UIButton } from "./utils/ui/ui_button";
 import { UIImage } from "./utils/ui/ui_image";
 import { Globals } from "./globals";
 import { Main } from "./main";
+import { InputManager } from "./utils/input_manager";
 
 function makeBorder(backImage: Graphics.Texture, gridImg: Graphics.Texture, textTexture: Graphics.Texture, line: string){
     const back = new UIImage(undefined, backImage);
@@ -79,7 +80,9 @@ export class MenuScene extends Scene{
         this.menuManager.draw(0, 0);
     }
     update(dt: number): void {
-        // Globals.inputManager.poll();
         this.menuManager.update(dt);
+        // const cx = Input.mouseX / Window.width * Globals.renderWidth;
+        // const cy = Input.mouseY / Window.height * Globals.renderHeight;
+        this.menuManager.handleCursor(Globals.inputManager.cursorPosition.x, Globals.inputManager.cursorPosition.y);
     }
 }
