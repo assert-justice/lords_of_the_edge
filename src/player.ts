@@ -28,6 +28,7 @@ export class Player extends Entity{
     turretSpr: Sprite;
     aim: Vec2;
     turretPos: Vec2;
+    bulletSpeed = 300;
     constructor(){
         super();
         const tex = Globals.textureManager.get('bike');
@@ -112,10 +113,13 @@ export class Player extends Entity{
             const angle = Math.atan2(this.aim.y, this.aim.x);
             this.turretSpr.properties.angle = angle;
         }
-        if(this.fireButton.isPressed() && this.aim.length() > 0){
+        // if(this.fireButton.isPressed()) System.println(this.aim.x, this.aim.y, this.aim.length());
+        if(this.fireButton.isDown()){
+            if(this.aim.length() === 0) this.aim.x = 1;
             this.aim.normalize();
             const bullet = Globals.playerBullets.getNew() as Bullet;
-            bullet.velocity = this.aim.copy().mul(100);
+            // bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
+            bullet.velocity = new Vec2(this.bulletSpeed, 0);
             bullet.position = this.turretPos.copy();
         }
     }

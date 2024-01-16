@@ -4,11 +4,13 @@ export class Pool{
     // data: T[] = [];
     private data: Set<Entity>;
     private inactive: Set<Entity>;
+    private freeQueue: Set<Entity>;
     initFn: ()=>Entity;
     constructor(initFn: ()=>Entity){
         this.initFn = initFn;
         this.data = new Set();
         this.inactive = new Set();
+        this.freeQueue = new Set();
     }
     getNew(): Entity{
         let res: Entity;
@@ -30,12 +32,29 @@ export class Pool{
     }
     remove(element: Entity): boolean{
         if(this.data.delete(element)){
-            this.inactive.add(element);
+            this.freeQueue.add(element);
+            // this.inactive.add(element);
             return true;
         }
         return false;
     }
-    forEach(fn: (element: Entity)=>void){
-        this.data.forEach(fn);
+    update(dt: number){
+        for (const value of this.freeQueue.values()) {
+            this.data.delete(value);
+        }
+        for (const value of this.data.values()) {
+            value.update(dt);
+        }
     }
+    draw(){
+        for (const value of this.data.values()) {
+            value.draw();
+        }
+    }
+    // forEach(fn: (element: Entity)=>void){
+    //     // this.data.values().forEach(fn);
+    //     for (const value of this.data.values()) {
+    //         fn(value);
+    //     }
+    // }
 }
