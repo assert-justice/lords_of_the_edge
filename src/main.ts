@@ -14,13 +14,12 @@ export class Main extends App{
         super();
         this.sceneStore.set('game', ()=>new Game(this));
         this.menuScene = new MenuScene(this);
-        // this.sceneStore.set('menu', ()=>new MenuScene(this));
-        // this.setScene('menu');
         this.renderTexture = Graphics.Texture.new(Globals.renderWidth, Globals.renderHeight);
         Globals.textureManager
         .add('bike', './sprites/bike.png')
         .add('pallet', './sprites/pallet.png')
         .add('turret', './sprites/turret.png')
+        .add('crate', './sprites/crate.png')
         .add('player_bullet', './sprites/bullet.png')
         .add('police_car', './sprites/police_car_no_siren.png')
         Globals.railManager = new RailManager();

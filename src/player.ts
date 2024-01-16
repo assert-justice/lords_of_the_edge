@@ -74,9 +74,12 @@ export class Player extends Entity{
         }
         return true;
     }
+    init(): void {
+        //
+    }
     update(dt: number): void {
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
-        // if(this.position.y > Window.height) this.position.y = 0;
+        if(this.position.y > Globals.renderHeight) this.position.y = 0;
         this.turretPos.x = this.position.x + 56;
         this.turretPos.y = this.position.y + 24;
         const move = this.moveAxis.getValue();
@@ -111,7 +114,7 @@ export class Player extends Entity{
         }
         if(this.fireButton.isPressed() && this.aim.length() > 0){
             this.aim.normalize();
-            const bullet = new Bullet(Globals.playerBullets);
+            const bullet = Globals.playerBullets.getNew() as Bullet;
             bullet.velocity = this.aim.copy().mul(100);
             bullet.position = this.turretPos.copy();
         }

@@ -13,6 +13,9 @@ export class PoliceCar extends Entity{
             height: tex.height * scale,
         });
     }
+    init(): void {
+        //
+    }
     draw(){
         this.spr.draw(this.position.x, this.position.y);
     }

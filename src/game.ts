@@ -11,17 +11,21 @@ export class Game extends Scene{
     constructor(app: App){
         super(app);
         this.player = new Player();
+        const crate = Globals.crates.getNew();
+        // crate.position.x = 
         // this.policeCar = new PoliceCar();
         Graphics.setClearColor(0.4/256,5.5/256,50.2/256,1);
     }
     update(dt: number){
         this.player.update(dt);
         Globals.playerBullets.forEach(b=>b.update(dt));
+        Globals.crates.forEach(c=>c.update(dt));
     }
     draw(){
         Globals.railManager.draw();
         this.player.draw();
         Globals.playerBullets.forEach(b=>b.draw());
+        Globals.crates.forEach(c=>c.draw());
         // this.policeCar.draw();
     }
 }
