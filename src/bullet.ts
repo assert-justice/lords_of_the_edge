@@ -6,6 +6,7 @@ import { Sprite } from "./utils/sprite";
 export class Bullet extends Entity{
     velocity: Vec2;
     sprite: Sprite;
+    damage = 10;
     constructor(){
         super();
         this.velocity = new Vec2();

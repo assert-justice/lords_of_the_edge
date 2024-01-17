@@ -17,7 +17,7 @@ export class Player extends Entity{
     jumpPower: number = 4;
     clamped: boolean = true;
     clampRange: number = 16;
-    speed: number = 500;
+    speed: number = 200;
     railManager: RailManager;
     moveAxis: VAxis2D;
     aimAxis: VAxis2D;
@@ -28,14 +28,13 @@ export class Player extends Entity{
     turretSpr: Sprite;
     aim: Vec2;
     turretPos: Vec2;
-    bulletSpeed = 300;
+    bulletSpeed = 500;
+    fireDelay = 0.1;
+    fireClock = 0;
     constructor(){
         super();
         const tex = Globals.textureManager.get('bike');
-        this.spr = new Sprite(tex,{
-            // ox: tex.width/2,
-            // oy: tex.height/2,
-        });
+        this.spr = new Sprite(tex);
         this.turretSpr = new Sprite(Globals.textureManager.get('turret'),{
             ox: 8, oy: 8, angle: 0,
         });
@@ -76,7 +75,7 @@ export class Player extends Entity{
         return true;
     }
     init(): void {
-        //
+        this.fireClock = 0.3;
     }
     update(dt: number): void {
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
@@ -113,15 +112,23 @@ export class Player extends Entity{
             const angle = Math.atan2(this.aim.y, this.aim.x);
             this.turretSpr.properties.angle = angle;
         }
+        let canFire = true;
+        if(this.fireClock > 0){
+            canFire = false;
+            this.fireClock-=dt;
+        }
         // if(this.fireButton.isPressed()) System.println(this.aim.x, this.aim.y, this.aim.length());
-        if(this.fireButton.isDown()){
+        if(this.fireButton.isDown() && canFire){
+            this.fireClock = this.fireDelay;
             if(this.aim.length() === 0) this.aim.x = 1;
             this.aim.normalize();
             const bullet = Globals.playerBullets.getNew() as Bullet;
-            // bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
-            bullet.velocity = new Vec2(this.bulletSpeed, 0);
+            bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
+            // bullet.velocity = new Vec2(this.bulletSpeed, 0);
             bullet.position = this.turretPos.copy();
         }
+        this.turretPos.x = this.position.x + 56;
+        this.turretPos.y = this.position.y + 24;
     }
     draw(){
         this.spr.draw(this.position.x, this.position.y);

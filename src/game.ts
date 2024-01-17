@@ -12,6 +12,7 @@ export class Game extends Scene{
     constructor(app: App){
         super(app);
         this.player = new Player();
+        this.player.init();
         const crate = Globals.crates.getNew() as Crate;
         crate.position.x = Globals.renderWidth - crate.spriteSheet.tileWidth;
         // this.policeCar = new PoliceCar();
