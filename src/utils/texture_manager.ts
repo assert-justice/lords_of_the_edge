@@ -1,4 +1,4 @@
-import { Graphics, System } from "cleo";
+import { Graphics } from "cleo";
 
 export class TextureManager{
     private data: Map<string, Graphics.Texture>;

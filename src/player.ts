@@ -5,8 +5,8 @@ import { Vec2 } from "./utils/la";
 import { RailManager } from "./rail_manager";
 import { Sprite } from "./utils/sprite";
 import { clamp } from "./utils/math";
-import { System, Window } from "cleo";
 import { Bullet } from "./bullet";
+import { Game } from "./game";
 
 export class Player extends Entity{
     spr: Sprite;
@@ -17,7 +17,9 @@ export class Player extends Entity{
     jumpPower: number = 4;
     clamped: boolean = true;
     clampRange: number = 16;
-    speed: number = 200;
+    speed = 200;
+    // speedForward: number = 200;
+    // speedBreak: number = 300;
     railManager: RailManager;
     moveAxis: VAxis2D;
     aimAxis: VAxis2D;
@@ -31,8 +33,10 @@ export class Player extends Entity{
     bulletSpeed = 500;
     fireDelay = 0.1;
     fireClock = 0;
-    constructor(){
+    game: Game;
+    constructor(game: Game){
         super();
+        this.game = game;
         const tex = Globals.textureManager.get('bike');
         this.spr = new Sprite(tex);
         this.turretSpr = new Sprite(Globals.textureManager.get('turret'),{
@@ -76,6 +80,8 @@ export class Player extends Entity{
     }
     init(): void {
         this.fireClock = 0.3;
+        this.position.y = this.railManager.rails[1] ?? 0;
+        this.position.x = 0;
     }
     update(dt: number): void {
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
@@ -117,14 +123,12 @@ export class Player extends Entity{
             canFire = false;
             this.fireClock-=dt;
         }
-        // if(this.fireButton.isPressed()) System.println(this.aim.x, this.aim.y, this.aim.length());
         if(this.fireButton.isDown() && canFire){
             this.fireClock = this.fireDelay;
             if(this.aim.length() === 0) this.aim.x = 1;
             this.aim.normalize();
             const bullet = Globals.playerBullets.getNew() as Bullet;
             bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
-            // bullet.velocity = new Vec2(this.bulletSpeed, 0);
             bullet.position = this.turretPos.copy();
         }
         this.turretPos.x = this.position.x + 56;
