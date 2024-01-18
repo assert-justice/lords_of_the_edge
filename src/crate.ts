@@ -22,7 +22,7 @@ export class Crate extends Entity{
     update(dt: number): void {
         for (const bullet of Globals.playerBullets.values()) {
             const b = bullet as Bullet;
-            if(this.boundingBox.collide(bullet.position)) {
+            if(this.boundingBox.collidePoint(bullet.position)) {
                 this.damage(b.damage);
                 b.cleanup();
             }

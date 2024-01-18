@@ -7,6 +7,8 @@ import { Sprite } from "./utils/sprite";
 import { clamp } from "./utils/math";
 import { Bullet } from "./bullet";
 import { Game } from "./game";
+import { AABB } from "./utils/aabb";
+import { Crate } from "./crate";
 
 export class Player extends Entity{
     spr: Sprite;
@@ -34,11 +36,13 @@ export class Player extends Entity{
     fireDelay = 0.1;
     fireClock = 0;
     game: Game;
+    hitbox: AABB;
     constructor(game: Game){
         super();
         this.game = game;
         const tex = Globals.textureManager.get('bike');
         this.spr = new Sprite(tex);
+        this.hitbox = new AABB(this.position, tex.width, tex.height);
         this.turretSpr = new Sprite(Globals.textureManager.get('turret'),{
             ox: 8, oy: 8, angle: 0,
         });
@@ -86,8 +90,8 @@ export class Player extends Entity{
     update(dt: number): void {
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
         if(this.position.y > Globals.renderHeight) this.position.y = 0;
-        this.turretPos.x = this.position.x + 56;
-        this.turretPos.y = this.position.y + 24;
+        // this.turretPos.x = this.position.x + 56;
+        // this.turretPos.y = this.position.y + 24;
         const move = this.moveAxis.getValue();
         this.clamped = !(move.y > 0.7); 
         if(this.isFalling()){
@@ -106,6 +110,8 @@ export class Player extends Entity{
             this.position.add(this.velocity);
         }
         this.position.x = clamp(0, this.position.x, Globals.renderWidth);
+        this.turretPos.x = this.position.x + 56;
+        this.turretPos.y = this.position.y + 24;
         // handle turret
         const joyAim = this.aimAxis.getValue();
         if(joyAim.length() > 0){
@@ -131,12 +137,17 @@ export class Player extends Entity{
             bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
             bullet.position = this.turretPos.copy();
         }
-        this.turretPos.x = this.position.x + 56;
-        this.turretPos.y = this.position.y + 24;
+        for (const c of Globals.crates.values()) {
+            const crate = c as Crate;
+            if(crate.boundingBox.collidePoint(this.position)) this.damage(10);
+        }
     }
     draw(){
         this.spr.draw(this.position.x, this.position.y);
         this.turretSpr.draw(this.turretPos.x, this.turretPos.y);
+    }
+    damage(val: number){
+        this.game.loseLife();
     }
     cleanup(): void {
         //

@@ -13,6 +13,7 @@ export class Game extends Scene{
     player: Player;
     livesDisplay: Text;
     progress: Progress;
+    lives: number = 3;
     // policeCar: PoliceCar;
     constructor(app: App){
         super(app);
@@ -39,5 +40,10 @@ export class Game extends Scene{
         this.livesDisplay.draw(0, 0);
         this.progress.draw(0.5);
         // this.policeCar.draw();
+    }
+    loseLife(){
+        this.lives--;
+        this.livesDisplay.text = `Lives: ${this.lives}`;
+        this.player.init();
     }
 }
