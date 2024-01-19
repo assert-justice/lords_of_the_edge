@@ -90,8 +90,6 @@ export class Player extends Entity{
     update(dt: number): void {
         if(this.input.getButton('uiBack').isPressed()) {Globals.paused = true; return;}
         if(this.position.y > Globals.renderHeight) this.position.y = 0;
-        // this.turretPos.x = this.position.x + 56;
-        // this.turretPos.y = this.position.y + 24;
         const move = this.moveAxis.getValue();
         this.clamped = !(move.y > 0.7); 
         if(this.isFalling()){
@@ -137,9 +135,10 @@ export class Player extends Entity{
             bullet.velocity = this.aim.copy().mul(this.bulletSpeed);
             bullet.position = this.turretPos.copy();
         }
+        // crate collisions
         for (const c of Globals.crates.values()) {
             const crate = c as Crate;
-            if(crate.boundingBox.collidePoint(this.position)) this.damage(10);
+            if(crate.boundingBox.collideBox(this.hitbox)) this.damage(10);
         }
     }
     draw(){

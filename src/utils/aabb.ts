@@ -12,4 +12,10 @@ export class AABB{
         if(pos.x > this.position.x + this.width || pos.y > this.position.y + this.height) return false;
         return true;
     }
+    collideBox(box: AABB): boolean{
+        return this.position.x < box.position.x + box.width &&
+            this.position.x + this.width > box.position.x &&
+            this.position.y < box.position.y + box.height &&
+            this.position.y + this.height > box.position.y;
+    }
 }
