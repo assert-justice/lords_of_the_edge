@@ -26,34 +26,14 @@ export class ChunkManager{
                 name: 'crate_10001',
                 difficulty: 1,
                 tags: [],
-                loadFn: ()=>{
-                    const c1 = Globals.crates.getNew() as Crate;
-                    c1.velocity.x = -300;
-                    c1.position.x = Globals.renderWidth;
-                    const c2 = Globals.crates.getNew() as Crate;
-                    c2.position.x = Globals.renderWidth;
-                    c2.position.y = Globals.railManager.rails[4] ?? 0;
-                    c2.velocity.x = -300;
-                },
+                loadFn: getCrateChunk('10001'),
                 delay: 1,
             },
             {
                 name: 'crate_10101',
                 difficulty: 1,
                 tags: [],
-                loadFn: ()=>{
-                    const c1 = Globals.crates.getNew() as Crate;
-                    c1.velocity.x = -300;
-                    c1.position.x = Globals.renderWidth;
-                    const c2 = Globals.crates.getNew() as Crate;
-                    c2.position.x = Globals.renderWidth;
-                    c2.position.y = Globals.railManager.rails[2] ?? 0;
-                    c2.velocity.x = -300;
-                    const c3 = Globals.crates.getNew() as Crate;
-                    c3.position.x = Globals.renderWidth;
-                    c3.position.y = Globals.railManager.rails[4] ?? 0;
-                    c3.velocity.x = -300;
-                },
+                loadFn: getCrateChunk('10101'),
                 delay: 2,
             },
         ];
@@ -78,4 +58,20 @@ export class ChunkManager{
         if(!res) throw `Invalid level name '${name}'`;
         return res;
     }
+}
+
+function getCrateChunk(pattern: string){
+    const fn = ()=>{
+        for (let idx = 0; idx < pattern.length; idx++) {
+            const c = pattern[idx];
+            if(c === '0') continue;
+            const x = Globals.renderWidth;
+            const y = Globals.renderHeight / 6 * idx;
+            const crate = Globals.crates.getNew() as Crate;
+            crate.position.x = x;
+            crate.position.y = y;
+            crate.velocity.x = -300;
+        }
+    };
+    return fn;
 }
