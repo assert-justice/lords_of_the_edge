@@ -1,12 +1,14 @@
 import { Sprite } from "./utils/sprite";
 import { Globals } from "./globals";
-import { Chunk } from "./chunk";
+import { Chunk } from "./chunk_manager";
 
 export class RailManager{
     rails: (number | null)[];
     spr: Sprite;
     chunks: Chunk[] = [];
     chunkIdx = 0;
+    checkpointIdx = 0;
+    delay = 0;
     constructor(){
         this.rails = [];
         this.spr = new Sprite(Globals.textureManager.get('pallet'),{
@@ -28,8 +30,21 @@ export class RailManager{
             if(rail !== null) this.spr.draw(0, rail);
         }
     }
-    load(chunks: Chunk[]){
+    loadLevel(chunks: Chunk[]){
         this.chunks = chunks;
         this.chunkIdx = 0;
+        this.checkpointIdx = 0;
+        this.delay = chunks[0].delay;
+    }
+    update(dt: number){
+        if(this.delay > 0){
+            this.delay -= dt;
+            if(this.delay <= 0){
+                this.chunks[this.chunkIdx].loadFn();
+                this.chunkIdx++;
+                if(this.chunkIdx >= this.chunks.length) return;
+                this.delay = this.chunks[this.chunkIdx].delay;
+            }
+        }
     }
 }

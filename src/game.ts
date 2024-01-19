@@ -19,18 +19,18 @@ export class Game extends Scene{
         super(app);
         this.player = new Player(this);
         this.player.init();
-        const crate = Globals.crates.getNew() as Crate;
-        crate.position.x = Globals.renderWidth - crate.spriteSheet.tileWidth;
         // this.policeCar = new PoliceCar();
         Graphics.setClearColor(0.4/256,5.5/256,50.2/256,1);
         const textSheet = new SpriteSheet(Graphics.Texture.fromFile('./sprites/font8x8_inverted.png'), 8, 8);
         this.livesDisplay = new Text(textSheet, 'Lives: 3');
         this.progress = new Progress();
+        Globals.railManager.loadLevel(Globals.chunkManager.getLevel('dodge'));
     }
     update(dt: number){
         this.player.update(dt);
         Globals.playerBullets.update(dt);
         Globals.crates.update(dt);
+        Globals.railManager.update(dt);
     }
     draw(){
         Globals.railManager.draw();

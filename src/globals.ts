@@ -6,6 +6,7 @@ import { TextureManager } from "./utils/texture_manager";
 import { Pool } from "./utils/pool";
 import { Bullet } from "./bullet";
 import { Crate } from "./crate";
+import { ChunkManager } from "./chunk_manager";
 
 export class Globals{
     static textureManager: TextureManager;
@@ -15,6 +16,7 @@ export class Globals{
     static paused: boolean = true;
     static playerBullets: Pool;
     static crates: Pool;
+    static chunkManager: ChunkManager;
     // internal resolution: 640, 360
     static renderWidth = 640;
     static renderHeight = 360;
@@ -28,5 +30,6 @@ export class Globals{
         ];
         this.playerBullets = new Pool(()=>new Bullet());
         this.crates = new Pool(()=>new Crate());
+        this.chunkManager = new ChunkManager();
     }
 }
