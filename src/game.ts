@@ -45,5 +45,6 @@ export class Game extends Scene{
         this.lives--;
         this.livesDisplay.text = `Lives: ${this.lives}`;
         this.player.init();
+        Globals.railManager.loadCheckpoint();
     }
 }

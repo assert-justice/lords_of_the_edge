@@ -38,6 +38,11 @@ export class Pool{
         }
         return false;
     }
+    clear(){
+        for (const value of this.data.values()) {
+            value.cleanup();
+        }
+    }
     update(dt: number){
         for (const value of this.freeQueue.values()) {
             this.data.delete(value);

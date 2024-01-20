@@ -21,23 +21,26 @@ export class ChunkManager{
         this.chunks = new Map();
         this.levels = new Map();
 
-        const dodge: Chunk[] = [
-            {
-                name: 'crate_10001',
-                difficulty: 1,
-                tags: [],
-                loadFn: getCrateChunk('10001'),
-                delay: 1,
-            },
-            {
-                name: 'crate_10101',
-                difficulty: 1,
-                tags: [],
-                loadFn: getCrateChunk('10101'),
-                delay: 2,
-            },
-        ];
-        this.addLevel('dodge', dodge.map(c => {
+        // const dodge: Chunk[] = [
+        //     {
+        //         name: 'crate_10001',
+        //         difficulty: 1,
+        //         tags: [],
+        //         loadFn: getCrateChunk('10001'),
+        //         delay: 1,
+        //     },
+        //     {
+        //         name: 'crate_10101',
+        //         difficulty: 1,
+        //         tags: [],
+        //         loadFn: getCrateChunk('10101'),
+        //         delay: 2,
+        //     },
+        // ];
+        const patterns = ['10001', '10101', '11001', '10011', '11101', '11011', ];
+
+        this.addLevel('dodge', patterns.map(p => {
+            const c = getCrateChunk(p);
             this.addChunk(c);
             return c.name;
         }));
@@ -60,8 +63,8 @@ export class ChunkManager{
     }
 }
 
-function getCrateChunk(pattern: string){
-    const fn = ()=>{
+function getCrateChunk(pattern: string): Chunk{
+    const loadFn = ()=>{
         for (let idx = 0; idx < pattern.length; idx++) {
             const c = pattern[idx];
             if(c === '0') continue;
@@ -73,5 +76,11 @@ function getCrateChunk(pattern: string){
             crate.velocity.x = -300;
         }
     };
-    return fn;
+    return {
+        name: `crate_${pattern}`,
+        difficulty: 1,
+        tags: [],
+        loadFn,
+        delay: 2,
+    };
 }

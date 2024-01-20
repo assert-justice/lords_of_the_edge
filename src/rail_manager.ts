@@ -36,6 +36,11 @@ export class RailManager{
         this.checkpointIdx = 0;
         this.delay = chunks[0].delay;
     }
+    loadCheckpoint(){
+        this.chunkIdx = this.checkpointIdx;
+        this.delay = this.chunks[this.chunkIdx].delay;
+        Globals.crates.clear();
+    }
     update(dt: number){
         if(this.delay > 0){
             this.delay -= dt;
